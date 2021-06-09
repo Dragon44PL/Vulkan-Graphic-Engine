@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGraphicEngine", "VulkanGraphicEngine\VulkanGraphicEngine.vcxproj", "{85C207CA-9250-49EB-8264-81B9F14B330C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Debug|x64.ActiveCfg = Debug|x64
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Debug|x64.Build.0 = Debug|x64
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Debug|x86.ActiveCfg = Debug|Win32
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Debug|x86.Build.0 = Debug|Win32
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Release|x64.ActiveCfg = Release|x64
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Release|x64.Build.0 = Release|x64
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Release|x86.ActiveCfg = Release|Win32
+		{85C207CA-9250-49EB-8264-81B9F14B330C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2CC6D1E3-1FC0-43A5-AEF1-76733165BA08}
+	EndGlobalSection
+EndGlobal
