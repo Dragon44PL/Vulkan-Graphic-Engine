@@ -11,10 +11,19 @@ struct QueueFamilyIndices {
     bool isValid() {
         return graphicsFamily >= 0 && presentationFamily >= 0;
     }
+
+    bool sameFamily() {
+        return graphicsFamily == presentationFamily;
+    }
 };
 
 struct SwapChainDetails {
     VkSurfaceCapabilitiesKHR surfaceCapabilities;               // Surface properties, e.g. image size/extent
     std::vector<VkSurfaceFormatKHR> surfaceFormats;             // Surface image formats e.g. RGBA and size of each color
     std::vector<VkPresentModeKHR> presentationModes;            // How images should be presented to screen
+};
+
+struct SwapChaingImage {
+    VkImage image;
+    VkImageView imageView;
 };
