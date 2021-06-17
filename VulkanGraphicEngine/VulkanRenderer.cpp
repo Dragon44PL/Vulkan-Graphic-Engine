@@ -223,6 +223,37 @@ void VulkanRenderer::createSwapchain()
     }
 }
 
+void VulkanRenderer::createGraphicsPipeline()
+{
+    // Read in SPIR-V code of shaders
+    auto vertexShaderCode = readFile("Shaders/vert.spv");
+    auto fragmentShaderCode = readFile("Shaders/frag.spv");
+
+    VkShaderModule vertexShaderModule = createShaderModule(vertexShaderCode);
+    VkShaderModule fragmentShaderModule = createShaderModule(fragmentShaderCode);
+
+    // Vertex Stage Creation Information
+    VkPipelineShaderStageCreateInfo vertexShaderCreateInfo = {};
+    vertexShaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertexShaderCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;                              // Shader Stage Name
+    vertexShaderCreateInfo.module = vertexShaderModule;                                     // Shader Module to be used by stage
+    vertexShaderCreateInfo.pName = "main";                                                  // Entry point in to shader
+
+    // Fragment Stage Creation Information
+    VkPipelineShaderStageCreateInfo fragmentShaderCreateInfo = {};
+    fragmentShaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragmentShaderCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;                              // Shader Stage Name
+    fragmentShaderCreateInfo.module = fragmentShaderModule;                                     // Shader Module to be used by stage
+    fragmentShaderCreateInfo.pName = "main";                                                    // Entry point in to shader
+
+    // Shader Create Infos for Pipeline
+    VkPipelineShaderStageCreateInfo shaderStages[] = { vertexShaderCreateInfo, fragmentShaderCreateInfo };
+
+    // Destroying Shader Modules
+    vkDestroyShaderModule(mainDevice.logicalDevice, fragmentShaderModule, nullptr);
+    vkDestroyShaderModule(mainDevice.logicalDevice, vertexShaderModule, nullptr);
+}
+
 void VulkanRenderer::getPhysicalDevice()
 {
     uint32_t devicesCount = 0;
@@ -492,4 +523,21 @@ VkImageView VulkanRenderer::createImageView(VkImage image, VkFormat format, VkIm
     }
 
     return imageView;
+}
+
+VkShaderModule VulkanRenderer::createShaderModule(const std::vector<char> shaders)
+{
+    VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
+    shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderModuleCreateInfo.codeSize = shaders.size();
+    shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t *>(shaders.data());
+
+    VkShaderModule shaderModule;
+    VkResult result = vkCreateShaderModule(mainDevice.logicalDevice, &shaderModuleCreateInfo, nullptr, &shaderModule);
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create a shader module!");
+    }
+
+    return shaderModule;
 }
