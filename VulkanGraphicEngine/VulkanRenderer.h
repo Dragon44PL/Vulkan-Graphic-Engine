@@ -9,6 +9,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <array>
 
 #include "Utilities.h"
 
@@ -42,12 +43,18 @@ private:
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
 
+    // Pipeline
+    VkPipeline graphicsPipeline;
+    VkPipelineLayout pipelineLayout;
+    VkRenderPass renderPass;
+
     // Vulkan Functions
     // - Create Functions
     void createInstance();
     void createLogicalDevice();
     void createSurface();
     void createSwapchain();
+    void createRenderPass();
     void createGraphicsPipeline();
 
     // - Get Functions
