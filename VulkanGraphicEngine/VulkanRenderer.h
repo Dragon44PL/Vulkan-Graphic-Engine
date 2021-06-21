@@ -19,12 +19,14 @@ public:
     VulkanRenderer();
 
     int init(GLFWwindow* window);
+    void draw();
     void cleanup();
 
     ~VulkanRenderer();
 
 private:
     GLFWwindow * window;
+    int currentFrame = 0;
 
     // Vulkan Components
     VkInstance instance;
@@ -45,6 +47,11 @@ private:
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
 
+    // Synchronisation
+    std::vector<VkSemaphore> imageAvailable;
+    std::vector<VkSemaphore> renderFinished;
+    std::vector<VkFence> drawFences;
+
     // Pipeline
     VkPipeline graphicsPipeline;
     VkPipelineLayout pipelineLayout;
@@ -64,6 +71,7 @@ private:
     void createFramebuffers();
     void createCommandPool();
     void createCommandBuffers();
+    void createSynchronisation();
 
     // - Record Functions
     void recordCommands();
