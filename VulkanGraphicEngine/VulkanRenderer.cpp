@@ -16,24 +16,40 @@ int VulkanRenderer::init(GLFWwindow* window)
         createSurface();
         getPhysicalDevice();
         createLogicalDevice();
-
-        std::vector<Vertex> meshVertices = {
-            {{0.4, -0.4, 0.0}, {1.0, 0.0, 0.0}},
-            {{0.4, 0.4, 0.0}, {0.0, 1.0, 0.0}},
-            {{-0.4, 0.4, 0.0}, {0.0, 0.0, 1.0}},
-
-            {{-0.4, 0.4, 0.0}, {0.0, 0.0, 1.0}},
-            {{-0.4, -0.4, 0.0}, {1.0, 1.0, 0.0}},
-            {{0.4, -0.4, 0.0}, {1.0, 0.0, 0.0}},
-        };
-
-        firstMesh = Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice, &meshVertices);
-
         createSwapchain();
         createRenderPass(); 
         createGraphicsPipeline();
         createFramebuffers();
         createCommandPool();
+
+
+        // Vertex Data
+        std::vector<Vertex> meshVertices = {
+            {{-0.1, -0.4, 0.0}, {1.0f, 0.0f, 0.0f}},            // 0
+            {{-0.1, 0.4, 0.0}, {0.0f, 1.0f, 0.0f}},             // 1
+            {{-0.9, 0.4, 0.0}, {0.0f, 0.0f, 1.0f}},             // 2    
+            {{-0.9, -0.4, 0.0}, {1.0f, 1.0f, 0.0f}},            // 3
+        };
+
+        std::vector<Vertex> anotherMeshVertices = {
+            {{0.9, -0.4, 0.0}, {1.0f, 0.0f, 0.0f}},             // 0
+            {{0.9, 0.4, 0.0}, {0.0f, 1.0f, 0.0f}},              // 1
+            {{0.1, 0.4, 0.0}, {0.0f, 0.0f, 1.0f}},              // 2    
+            {{0.1, -0.4, 0.0}, {1.0f, 1.0f, 0.0f}},             // 3
+        };  
+
+        // Index Data
+        std::vector<uint32_t> meshIndices = {
+            0, 1, 2,
+            2, 3, 0
+        };
+
+        meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice, graphicsQueue,
+            graphicsCommandPool, &meshVertices, &meshIndices));
+
+        meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice, graphicsQueue,
+            graphicsCommandPool, &anotherMeshVertices, &meshIndices));
+
         createCommandBuffers();
         recordCommands();
         createSynchronisation();
@@ -102,8 +118,10 @@ void VulkanRenderer::cleanup()
     // Wait before no action being run on device before destroying
     vkDeviceWaitIdle(mainDevice.logicalDevice);
 
-    firstMesh.destroyVertexBuffer();
-
+    for (size_t i = 0; i < meshes.size(); i++)
+    {
+        meshes[i].destroyBuffers();
+    }
     for (size_t i = 0; i < MAX_FRAME_DRAWS; i++)
     {
         vkDestroySemaphore(mainDevice.logicalDevice, renderFinished[i], nullptr);
@@ -703,14 +721,23 @@ void VulkanRenderer::recordCommands()
                 // Bind Pipeline to be used in render pass (to draw to at the moment)
                 vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-                VkBuffer vertexBuffers[] = { firstMesh.getVertexBuffer() };                 // Buffers to bind
-                VkDeviceSize offsets[] = { 0 };                                             // Offsets into buffers being bound
-                vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);    // Command to bind Vertex Buffer before drawing with them
+                for (size_t j = 0; j < meshes.size(); j++)
+                {
 
-                // Execute Pipeline
-                // Vertex Count - Number of vertex to draw
-                // Instance Count - good for drawing object multiple times - calling shaders multiple times - offsets in shaders
-                vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(firstMesh.getVertexCount()), 1, 0, 0);
+                    VkBuffer vertexBuffers[] = { meshes[j].getVertexBuffer() };                 // Buffers to bind
+                    VkDeviceSize offsets[] = { 0 };                                             // Offsets into buffers being bound
+                    vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);    // Command to bind Vertex Buffer before drawing with them
+
+                    // Bind Mesh Index Buffer with 0 offset and using uint32 type
+                    vkCmdBindIndexBuffer(commandBuffers[i], meshes[j].getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+                    // Execute Pipeline
+                    // Vertex Count - Number of vertex to draw
+                    // Instance Count - good for drawing object multiple times - calling shaders multiple times - offsets in shaders
+                    //vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(firstMesh.getVertexCount()), 1, 0, 0);
+
+                    vkCmdDrawIndexed(commandBuffers[i], meshes[j].getIndexCount(), 1, 0, 0, 0);
+                }
 
             // End Render Pass
             // renderPass.storeOp called
