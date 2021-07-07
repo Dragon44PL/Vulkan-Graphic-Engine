@@ -5,6 +5,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <stdexcept>
 #include <vector>
 #include <set>
@@ -20,6 +23,7 @@ public:
     VulkanRenderer();
 
     int init(GLFWwindow* window);
+    void updateModel(glm::mat4 model);
     void draw();
     void cleanup();
 
@@ -31,6 +35,14 @@ private:
 
     // Scene Objects
     std::vector<Mesh> meshes;
+
+    // Scene Settings
+
+    struct ModelViewProjection {
+        glm::mat4 projection;           // How camera views the world (depth - 3D, flat - 2D)
+        glm::mat4 view;                 // Where camera is viewing from and which direction it is viewing
+        glm::mat4 model;                // Where the object is in the world
+    } mvp;
     
     // Vulkan Components
     VkInstance instance;
@@ -47,6 +59,15 @@ private:
     std::vector<SwapChainImage> swapChainImages;
     std::vector<VkFramebuffer> swapChainFramebuffers;
     std::vector<VkCommandBuffer> commandBuffers;
+
+    // Descriptors
+    VkDescriptorSetLayout descriptorSetLayout;
+
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
+
+    std::vector<VkBuffer> uniformBuffer;
+    std::vector<VkDeviceMemory> uniformBufferMemory;
 
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
@@ -71,11 +92,18 @@ private:
     void createSurface();
     void createSwapchain();
     void createRenderPass();
+    void createDescriptorSetLayout();
     void createGraphicsPipeline();
     void createFramebuffers();
     void createCommandPool();
     void createCommandBuffers();
     void createSynchronisation();
+
+    void createUniformBuffers();
+    void createDescriptorPool();
+    void createDescriptorSets();
+
+    void updateUniformBuffer(uint32_t imageIndex);
 
     // - Record Functions
     void recordCommands();
