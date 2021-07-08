@@ -23,7 +23,7 @@ public:
     VulkanRenderer();
 
     int init(GLFWwindow* window);
-    void updateModel(glm::mat4 model);
+    void updateModel(int modelId, glm::mat4 model);
     void draw();
     void cleanup();
 
@@ -38,11 +38,10 @@ private:
 
     // Scene Settings
 
-    struct ModelViewProjection {
+    struct UboViewProjection {
         glm::mat4 projection;           // How camera views the world (depth - 3D, flat - 2D)
         glm::mat4 view;                 // Where camera is viewing from and which direction it is viewing
-        glm::mat4 model;                // Where the object is in the world
-    } mvp;
+    } uboViewProjection;
     
     // Vulkan Components
     VkInstance instance;
@@ -66,8 +65,15 @@ private:
     VkDescriptorPool descriptorPool;
     std::vector<VkDescriptorSet> descriptorSets;
 
-    std::vector<VkBuffer> uniformBuffer;
-    std::vector<VkDeviceMemory> uniformBufferMemory;
+    std::vector<VkBuffer> vpUniformBuffer;
+    std::vector<VkDeviceMemory> vpUniformBufferMemory;
+
+    std::vector<VkBuffer> modelUniformBuffer;
+    std::vector<VkDeviceMemory> modelUniformBufferMemory;
+
+    VkDeviceSize minUniformBufferOffset;
+    size_t modelUniformAlignment;
+    UboModel* modelTransferSpace;
 
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
@@ -103,13 +109,16 @@ private:
     void createDescriptorPool();
     void createDescriptorSets();
 
-    void updateUniformBuffer(uint32_t imageIndex);
+    void updateUniformBuffers(uint32_t imageIndex);
 
     // - Record Functions
     void recordCommands();
 
     // - Get Functions
     void getPhysicalDevice();
+
+    // - Allocate Functions
+    void allocateDynamicBufferTransferSpace();
 
     // - Checker Functions
 
