@@ -7,12 +7,21 @@
 
 #include "Utilities.h"
 
+struct UboModel {
+    // Where the object is positioned in the world
+    // Identity matrix : Leave everything where it is
+    glm::mat4 model;
+};
+
 class Mesh
 {
 public:
     Mesh();
     Mesh(VkPhysicalDevice physicalDevice, VkDevice device, VkQueue transferQueue,
         VkCommandPool transferCommandPool, std::vector<Vertex> * vertices, std::vector<uint32_t> * indices);
+
+    void setModel(glm::mat4 model);
+    UboModel getModel();
 
     int getVertexCount();
     int getIndexCount();
@@ -24,6 +33,8 @@ public:
     ~Mesh();
 
 private:
+    UboModel uboModel;
+
     int vertexCount;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
