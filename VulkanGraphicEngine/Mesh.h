@@ -7,7 +7,7 @@
 
 #include "Utilities.h"
 
-struct UboModel {
+struct Model {
     // Where the object is positioned in the world
     // Identity matrix : Leave everything where it is
     glm::mat4 model;
@@ -21,7 +21,7 @@ public:
         VkCommandPool transferCommandPool, std::vector<Vertex> * vertices, std::vector<uint32_t> * indices);
 
     void setModel(glm::mat4 model);
-    UboModel getModel();
+    Model getModel();
 
     int getVertexCount();
     int getIndexCount();
@@ -33,7 +33,7 @@ public:
     ~Mesh();
 
 private:
-    UboModel uboModel;
+    Model model;
 
     int vertexCount;
     VkBuffer vertexBuffer;
