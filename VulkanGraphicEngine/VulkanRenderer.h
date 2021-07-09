@@ -68,12 +68,14 @@ private:
     std::vector<VkBuffer> vpUniformBuffer;
     std::vector<VkDeviceMemory> vpUniformBufferMemory;
 
-    std::vector<VkBuffer> modelUniformBuffer;
-    std::vector<VkDeviceMemory> modelUniformBufferMemory;
+    //std::vector<VkBuffer> modelUniformBuffer;
+    //std::vector<VkDeviceMemory> modelUniformBufferMemory;
 
-    VkDeviceSize minUniformBufferOffset;
-    size_t modelUniformAlignment;
-    UboModel* modelTransferSpace;
+    VkPushConstantRange pushConstantRange;
+
+    //VkDeviceSize minUniformBufferOffset;
+    //size_t modelUniformAlignment;
+    //Model* modelTransferSpace;
 
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
@@ -99,6 +101,7 @@ private:
     void createSwapchain();
     void createRenderPass();
     void createDescriptorSetLayout();
+    void createPushConstantRange();
     void createGraphicsPipeline();
     void createFramebuffers();
     void createCommandPool();
@@ -112,7 +115,7 @@ private:
     void updateUniformBuffers(uint32_t imageIndex);
 
     // - Record Functions
-    void recordCommands();
+    void recordCommands(uint32_t currentImage);
 
     // - Get Functions
     void getPhysicalDevice();
