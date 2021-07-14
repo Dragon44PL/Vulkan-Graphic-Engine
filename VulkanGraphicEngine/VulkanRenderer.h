@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "stb_image.h"
+
 #include <stdexcept>
 #include <vector>
 #include <set>
@@ -81,6 +83,10 @@ private:
     //size_t modelUniformAlignment;
     //Model* modelTransferSpace;
 
+    // - Assets
+    std::vector<VkImage> textureImages;
+    std::vector<VkDeviceMemory> textureImagesMemory;
+
     VkFormat swapChainFormat;
     VkExtent2D swapChainExtent;
 
@@ -152,5 +158,9 @@ private:
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
     VkShaderModule createShaderModule(const std::vector<char> shaders);
 
+    int createTexture(std::string filename);
+
+    // -- Loader Functions
+    stbi_uc* loadTextureFile(std::string filename, int* width, int* height, VkDeviceSize* imageSize);
 };
 
