@@ -1,5 +1,6 @@
 #pragma once
 
+#define STB_IMAGE_IMPLEMENTATION
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 #define GLFW_INCLUDE_VULKAN
@@ -8,9 +9,12 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <string>
+#include <iostream>
 
 #include "VulkanRenderer.h"
 
+const std::string title = "Test Window";
 GLFWwindow* window;
 VulkanRenderer vulkanRenderer;
 
@@ -25,15 +29,22 @@ void initWindow(std::string name = "", const int width = 800, const int height =
 
 int main() {
 
-    initWindow("Test Window", 800, 600);
+    initWindow(title.c_str(), 800, 600);
 
     if (vulkanRenderer.init(window) == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }
 
+    // Rotation
     float angle = 0.0f;
     float deltaTime = 0.0f;
     float lastTime = 0.0f;
+
+    // Frames Per Second
+
+    float framesDeltaTime = 0.0f;
+    float framesLastTime = 0.0f;
+    int framesCounter = 0;
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -42,9 +53,21 @@ int main() {
         deltaTime = now - lastTime;
         lastTime = now;
 
+        framesDeltaTime = now - framesLastTime;
+
         angle += 10.0f * deltaTime;
         if (angle > 360.0f) {
             angle -= 360.0f;
+        }
+
+        framesCounter += 1;
+        if (framesDeltaTime >= 1.0f)
+        {
+            double fps = double(framesCounter) / deltaTime;
+            std::string windowTitle = title + " [ fps: " + std::to_string(fps) + " ]";
+            glfwSetWindowTitle(window, windowTitle.c_str());
+            framesCounter = 0;
+            framesLastTime = 0;
         }
 
         glm::mat4 firstModel(1.0f);
